@@ -1,3 +1,32 @@
+CHANGES IN VERSION 1.7.4
+------------------------
+ o [covplot] xlim now not only restrict the window of data but also set the limit of the graphic object <2015-12-30, Wed>
+   + see https://github.com/GuangchuangYu/ChIPseeker/issues/20
+ 
+CHANGES IN VERSION 1.7.3
+------------------------
+ o fixed R check <2015-12-29, Tue>
+ 
+CHANGES IN VERSION 1.7.2
+------------------------
+ o use geom_rect instead of geom_segment in covplot <2015-11-30, Mon>
+ o open lower parameter (by default =1) to specific lower cutoff of coverage signal <2015-11-29, Sun>
+ o fixed covplot to work with None RleViews of specific chromosome <2015-11-29, Sun>
+ o addFlankGeneInfo now works with level="gene" <2015-11-19, Thu>
+   + see https://github.com/GuangchuangYu/ChIPseeker/issues/18
+ 
+CHANGES IN VERSION 1.7.1
+------------------------
+ o fixed extracting ID type from TxDb object, since the change of metadata(TxDb). now using grep to extract. <2015-10-27, Tue>
+ o add vp parameter to set viewport of vennpie on top of upsetplot by user request <2015-10-26, Mon>
+   + see http://ygc.name/2015/07/28/upsetplot-in-chipseeker/#comment-19470
+ o getBioRegion function <2015-10-20, Tue>
+   + see https://github.com/GuangchuangYu/ChIPseeker/issues/16
+
+CHANGES IN VERSION 1.7.0
+------------------------
+ o BioC 3.3 branch
+ 
 CHANGES IN VERSION 1.5.11
 ------------------------
  o remove ellipsis parameter in enrichPeakOverlap function and extend it to support GRanges objects <2015-10-08, Thu>

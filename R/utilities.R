@@ -29,6 +29,32 @@
     
 }
 
+
+##' @importFrom GenomicFeatures exonsBy
+get_exonList <- function(ChIPseekerEnv) {
+    TxDb <- get("TXDB", envir=ChIPseekerEnv)
+    if ( exists("exonList", envir=ChIPseekerEnv, inherits=FALSE) ) {
+        exonList <- get("exonList", envir=ChIPseekerEnv)
+    } else {
+        exonList <- exonsBy(TxDb)
+        assign("exonList", exonList, envir=ChIPseekerEnv)
+    }
+    return(exonList)
+}
+
+##' @importFrom GenomicFeatures intronsByTranscript
+get_intronList <- function(ChIPseekerEnv) {
+    TxDb <- get("TXDB", envir=ChIPseekerEnv)
+    if ( exists("intronList", envir=ChIPseekerEnv, inherits=FALSE) ) {
+        intronList <- get("intronList", envir=ChIPseekerEnv)
+    } else {
+        intronList <- intronsByTranscript(TxDb)
+        assign("intronList", intronList, envir=ChIPseekerEnv)
+    }
+    return(intronList)
+}
+
+
 getCols <- function(n) {
     col <- c("#8dd3c7", "#ffffb3", "#bebada",
              "#fb8072", "#80b1d3", "#fdb462",
@@ -351,4 +377,19 @@ parse_targetPeak_Param <- function(targetPeak) {
         }
     }
     return(res)
+}
+
+
+IDType <- function(TxDb) {
+    ##
+    ## IDType <- metadata(TxDb)[8,2]
+    ##
+    ## update: 2015-10-27
+    ## now IDType change from metadata(TxDb)[8,2] to metadata(TxDb)[9,2] 
+    ## it may change in future too
+    ##
+    ## it's safe to extract via grep
+    
+    md <- metadata(TxDb)
+    md[grep("Type of Gene ID", md[,1]), 2]
 }
