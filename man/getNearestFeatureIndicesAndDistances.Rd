@@ -4,12 +4,24 @@
 \alias{getNearestFeatureIndicesAndDistances}
 \title{getNearestFeatureIndicesAndDistances}
 \usage{
-getNearestFeatureIndicesAndDistances(peaks, features)
+getNearestFeatureIndicesAndDistances(peaks, features, sameStrand = FALSE,
+  ignoreOverlap = FALSE, ignoreUpstream = FALSE, ignoreDownstream = FALSE,
+  overlap = "TSS")
 }
 \arguments{
 \item{peaks}{peak in GRanges}
 
 \item{features}{features in GRanges}
+
+\item{sameStrand}{logical, whether find nearest gene in the same strand}
+
+\item{ignoreOverlap}{logical, whether ignore overlap of TSS with peak}
+
+\item{ignoreUpstream}{logical, if True only annotate gene at the 3' of the peak.}
+
+\item{ignoreDownstream}{logical, if True only annotate gene at the 5' of the peak.}
+
+\item{overlap}{one of "TSS" or "all"}
 }
 \value{
 list

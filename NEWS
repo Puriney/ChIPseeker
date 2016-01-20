@@ -1,5 +1,33 @@
+CHANGES IN VERSION 1.7.8
+------------------------
+ o fixed BUG of Peaks upstream first or downstream last gene not annotated <2016-01-20, Wed>
+   + contributed by Michael Kluge
+   + see https://github.com/GuangchuangYu/ChIPseeker/pull/24
+ 
+CHANGES IN VERSION 1.7.7
+------------------------
+ o bug fixed in newly introduced parameter 'overlap'. solve NA issue. <2016-01-13, Wed>
+ 
+CHANGES IN VERSION 1.7.6
+------------------------
+ o introduce 'overlap' parameter in annotatePeak, by default overlap="TSS" and only overlap with TSS will be reported as the nearest gene.
+   if overlap="all", then gene overlap with peak will be reported as nearest gene, no matter the overlap is at TSS region or not. <2016-01-12, Tue>
+ o bug fixed in find overlap with peaks have strand info. <2016-01-12, Tue>
+   + see https://github.com/GuangchuangYu/ChIPseeker/issues/23
+ 
+CHANGES IN VERSION 1.7.5
+------------------------
+ o add paramters, sameStrand,ignoreOverlap, ignoreUpstream and ignoreDownstream in annotatePeak <2016-01-10, Sun>
+   + see https://github.com/GuangchuangYu/ChIPseeker/issues/17
+ o bug fixed in peak orientation <2016-01-10, Sun>
+   + see https://github.com/GuangchuangYu/ChIPseeker/issues/22
+
 CHANGES IN VERSION 1.7.4
 ------------------------
+ o stop if input list of csAnno object has no name attribute 
+   + see https://github.com/GuangchuangYu/ChIPseeker/issues/21
+   + plotAnnoBar
+   + plotDistToTSS
  o [covplot] xlim now not only restrict the window of data but also set the limit of the graphic object <2015-12-30, Wed>
    + see https://github.com/GuangchuangYu/ChIPseeker/issues/20
  

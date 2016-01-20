@@ -5,7 +5,7 @@
 \title{getGenomicAnnotation}
 \usage{
 getGenomicAnnotation(peaks, distance, tssRegion = c(-3000, 3000), TxDb, level,
-  genomicAnnotationPriority)
+  genomicAnnotationPriority, sameStrand = FALSE)
 }
 \arguments{
 \item{peaks}{peaks in GRanges object}
@@ -19,6 +19,8 @@ getGenomicAnnotation(peaks, distance, tssRegion = c(-3000, 3000), TxDb, level,
 \item{level}{one of gene or transcript}
 
 \item{genomicAnnotationPriority}{genomic Annotation Priority}
+
+\item{sameStrand}{whether annotate gene in same strand}
 }
 \value{
 character vector

@@ -11,6 +11,11 @@
 ##' @param annoDb annotation package
 ##' @param addFlankGeneInfo logical, add flanking gene information from the peaks 
 ##' @param flankDistance distance of flanking sequence
+##' @param sameStrand logical, whether find nearest/overlap gene in the same strand
+##' @param ignoreOverlap logical, whether ignore overlap of TSS with peak
+##' @param ignoreUpstream logical, if True only annotate gene at the 3' of the peak.
+##' @param ignoreDownstream logical, if True only annotate gene at the 5' of the peak.
+##' @param overlap one of 'TSS' or 'all', if overlap="all", then gene overlap with peak will be reported as nearest gene, no matter the overlap is at TSS region or not.
 ##' @param verbose print message or not
 ##' @return data.frame or GRanges object with columns of:
 ##' 
@@ -62,6 +67,11 @@ annotatePeak <- function(peak,
                          annoDb=NULL,
                          addFlankGeneInfo=FALSE,
                          flankDistance=5000,
+                         sameStrand = FALSE,
+                         ignoreOverlap=FALSE,
+                         ignoreUpstream=FALSE,
+                         ignoreDownstream=FALSE,
+                         overlap = "TSS",
                          verbose=TRUE) {
     
     level <- match.arg(level, c("transcript", "gene"))
@@ -96,8 +106,12 @@ annotatePeak <- function(peak,
     if (verbose)
         cat(">> identifying nearest features...\t\t",
             format(Sys.time(), "%Y-%m-%d %X"), "\n")
+    
     ## nearest features
-    idx.dist <- getNearestFeatureIndicesAndDistances(peak.gr, features)
+    idx.dist <- getNearestFeatureIndicesAndDistances(peak.gr, features,
+                                                     sameStrand, ignoreOverlap,
+                                                     ignoreUpstream,ignoreDownstream,
+                                                     overlap=overlap)
     nearestFeatures <- features[idx.dist$index]
     if (verbose)
         cat(">> calculating distance from peak to TSS...\t",
@@ -113,7 +127,7 @@ annotatePeak <- function(peak,
             format(Sys.time(), "%Y-%m-%d %X"), "\n")
     ## annotation
     if (assignGenomicAnnotation == TRUE) {
-        anno <- getGenomicAnnotation(peak.gr, distance, tssRegion, TxDb, level, genomicAnnotationPriority)
+        anno <- getGenomicAnnotation(peak.gr, distance, tssRegion, TxDb, level, genomicAnnotationPriority, sameStrand=sameStrand)
         annotation <- anno[["annotation"]]
         detailGenomicAnnotation <- anno[["detailGenomicAnnotation"]]
     } else {

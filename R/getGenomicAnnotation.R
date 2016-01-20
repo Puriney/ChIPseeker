@@ -1,12 +1,12 @@
-updateGenomicAnnotation <- function(peaks, genomicRegion, type, anno) {
-    hits <- getGenomicAnnotation.internal(peaks, genomicRegion, type)
+updateGenomicAnnotation <- function(peaks, genomicRegion, type, anno, sameStrand=FALSE) {
+    hits <- getGenomicAnnotation.internal(peaks, genomicRegion, type, sameStrand=sameStrand)
     if (length(hits) > 1) {
         hitIndex <- hits$queryIndex
         anno[["annotation"]][hitIndex] <- hits$annotation
         anno[["detailGenomicAnnotation"]][hitIndex, type] <- TRUE
     }
     return(anno)
- }         
+}         
 
 
 ##' get Genomic Annotation of peaks
@@ -19,6 +19,7 @@ updateGenomicAnnotation <- function(peaks, genomicRegion, type, anno) {
 ##' @param TxDb TxDb object
 ##' @param level one of gene or transcript
 ##' @param genomicAnnotationPriority genomic Annotation Priority
+##' @param sameStrand whether annotate gene in same strand
 ##' @importFrom GenomicFeatures threeUTRsByTranscript
 ##' @importFrom GenomicFeatures fiveUTRsByTranscript
 ##' @return character vector
@@ -28,7 +29,8 @@ getGenomicAnnotation <- function(peaks,
                                  tssRegion=c(-3000, 3000),
                                  TxDb,
                                  level,
-                                 genomicAnnotationPriority
+                                 genomicAnnotationPriority,
+                                 sameStrand = FALSE
                                  ) {
     
     ##
@@ -77,11 +79,11 @@ getGenomicAnnotation <- function(peaks,
         } else if (AP == "Intron") {
             ## Introns
             intronList <- get_intronList(ChIPseekerEnv)
-            anno <- updateGenomicAnnotation(peaks, intronList, "Intron", anno)
+            anno <- updateGenomicAnnotation(peaks, intronList, "Intron", anno, sameStrand=sameStrand)
         } else if (AP == "Exon") {
             ## Exons
             exonList <- get_exonList(ChIPseekerEnv)
-            anno <- updateGenomicAnnotation(peaks, exonList, "Exon", anno)
+            anno <- updateGenomicAnnotation(peaks, exonList, "Exon", anno, sameStrand=sameStrand)
         } else if (AP == "3UTR") {
             ## 3' UTR Exons
             if ( exists("threeUTRList", envir=ChIPseekerEnv, inherits=FALSE) ) {
@@ -90,7 +92,7 @@ getGenomicAnnotation <- function(peaks,
                 threeUTRList <- threeUTRsByTranscript(TxDb)
                 assign("threeUTRList", threeUTRList, envir=ChIPseekerEnv)
             }
-            anno <- updateGenomicAnnotation(peaks, threeUTRList, "threeUTR", anno)
+            anno <- updateGenomicAnnotation(peaks, threeUTRList, "threeUTR", anno, sameStrand=sameStrand)
         } else if (AP == "5UTR") {
             ## 5' UTR Exons
             if ( exists("fiveUTRList", envir=ChIPseekerEnv, inherits=FALSE) ) {
@@ -99,7 +101,7 @@ getGenomicAnnotation <- function(peaks,
                 fiveUTRList <- fiveUTRsByTranscript(TxDb)
                 assign("fiveUTRList", fiveUTRList, envir=ChIPseekerEnv)
             }
-            anno <- updateGenomicAnnotation(peaks, fiveUTRList, "fiveUTR", anno)
+            anno <- updateGenomicAnnotation(peaks, fiveUTRList, "fiveUTR", anno, sameStrand=sameStrand)
         }
 
         annotation <- anno[["annotation"]]
@@ -144,7 +146,11 @@ getGenomicAnnotation <- function(peaks,
     features <- getGene(TxDb, by=level)
 
     ## nearest from gene end
-    idx <- follow(peaks, features)
+    if (sameStrand) {
+        idx <- precede(peaks, features)
+    } else {
+        idx <- precede(peaks, unstrand(features))
+    }
     na.idx <- which(is.na(idx))
     if (length(na.idx)) {
         idx <- idx[-na.idx]
@@ -182,7 +188,7 @@ getGenomicAnnotation <- function(peaks,
 
 
 ##' @import BiocGenerics S4Vectors IRanges
-getGenomicAnnotation.internal <- function(peaks, genomicRegion, type){
+getGenomicAnnotation.internal <- function(peaks, genomicRegion, type, sameStrand=FALSE){
     GRegion <- unlist(genomicRegion)
     GRegionLen <- elementLengths(genomicRegion)
     if (type == "Intron" || type =="Exon") {
@@ -200,7 +206,12 @@ getGenomicAnnotation.internal <- function(peaks, genomicRegion, type){
         GRegion$intron_rank <- intron_rank
     }
     ## find overlap
-    GRegionHit <- findOverlaps(peaks, GRegion)
+    if (sameStrand) {
+        GRegionHit <- findOverlaps(peaks, GRegion)
+    } else {
+        GRegionHit <- findOverlaps(peaks, unstrand(GRegion))
+    }
+    
     if (length(GRegionHit) == 0) {
         return(NA)
     }
